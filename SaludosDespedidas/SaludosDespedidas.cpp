@@ -5,6 +5,7 @@
 #include <ctime>
 #include <limits>
 #include <algorithm> // Para usar std::find y std::remove
+#include <cctype>    // Para usar std::toupper
 
 // Función que muestra un saludo personalizado
 void mostrarSaludo(const std::string& nombre) {
@@ -28,10 +29,13 @@ std::string obtenerNombre() {
     }
 }
 
-// Función para mostrar todos los nombres ingresados
+// Función para mostrar todos los nombres ingresados ordenados alfabéticamente
 void mostrarNombres(const std::vector<std::string>& nombres) {
-    std::cout << "\nHas ingresado " << nombres.size() << " nombre(s):" << std::endl;
-    for (const std::string& nombre : nombres) {
+    std::vector<std::string> nombresOrdenados = nombres;
+    std::sort(nombresOrdenados.begin(), nombresOrdenados.end());
+
+    std::cout << "\nHas ingresado " << nombresOrdenados.size() << " nombre(s) ordenados alfabéticamente:" << std::endl;
+    for (const std::string& nombre : nombresOrdenados) {
         std::cout << "- " << nombre << std::endl;
     }
 }
@@ -79,6 +83,18 @@ void eliminarNombre(std::vector<std::string>& nombres, const std::string& nombre
     nombres.erase(it, nombres.end());
 }
 
+// Función para contar cuántos nombres empiezan con una letra específica
+int contarNombresPorLetra(const std::vector<std::string>& nombres, char letra) {
+    letra = std::toupper(letra);
+    int contador = 0;
+    for (const std::string& nombre : nombres) {
+        if (std::toupper(nombre.front()) == letra) {
+            contador++;
+        }
+    }
+    return contador;
+}
+
 // Función principal del programa
 int main() {
     std::vector<std::string> nombres;
@@ -101,7 +117,7 @@ int main() {
 
     } while (opcion == 's' || opcion == 'S');
 
-    // Mostrar todos los nombres ingresados
+    // Mostrar todos los nombres ingresados ordenados alfabéticamente
     mostrarNombres(nombres);
 
     // Mostrar la longitud promedio de los nombres ingresados
@@ -129,6 +145,15 @@ int main() {
         eliminarNombre(nombres, nombreEliminar);
         std::cout << "Nombre '" << nombreEliminar << "' eliminado de la lista." << std::endl;
     }
+
+    // Contar cuántos nombres empiezan con una letra específica
+    char letraBuscar;
+    std::cout << "\nIngrese una letra para contar cuántos nombres empiezan con esa letra: ";
+    std::cin >> letraBuscar;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Limpiar el buffer de entrada
+
+    int cantidadNombresPorLetra = contarNombresPorLetra(nombres, letraBuscar);
+    std::cout << "Cantidad de nombres que empiezan con '" << letraBuscar << "': " << cantidadNombresPorLetra << std::endl;
 
     // Mostrar un mensaje de despedida aleatorio
     mostrarDespedida();
