@@ -50,6 +50,22 @@ void mostrarDespedida() {
     std::cout << "\nGracias por usar el programa. " << despedidas[indice] << std::endl;
 }
 
+// Función para calcular y mostrar la longitud promedio de los nombres ingresados
+void mostrarLongitudPromedio(const std::vector<std::string>& nombres) {
+    if (nombres.empty()) {
+        std::cout << "No se ingresaron nombres, no se puede calcular la longitud promedio." << std::endl;
+        return;
+    }
+
+    int totalCaracteres = 0;
+    for (const std::string& nombre : nombres) {
+        totalCaracteres += nombre.length();
+    }
+
+    double promedio = static_cast<double>(totalCaracteres) / nombres.size();
+    std::cout << "La longitud promedio de los nombres ingresados es: " << promedio << " caracteres." << std::endl;
+}
+
 // Función principal del programa
 int main() {
     std::vector<std::string> nombres;
@@ -74,6 +90,9 @@ int main() {
 
     // Mostrar todos los nombres ingresados
     mostrarNombres(nombres);
+
+    // Mostrar la longitud promedio de los nombres ingresados
+    mostrarLongitudPromedio(nombres);
 
     // Mostrar un mensaje de despedida aleatorio
     mostrarDespedida();
