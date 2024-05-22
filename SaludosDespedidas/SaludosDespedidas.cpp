@@ -1,36 +1,66 @@
 #include <iostream>
 #include <string>
-#include <limits>
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include <limits>
 
 // Función que muestra un saludo personalizado
 void mostrarSaludo(const std::string& nombre) {
     std::cout << "Hola, " << nombre << "! Bienvenido al programa en C++." << std::endl;
 }
 
-// Función principal del programa
-int main() {
+// Función para obtener y validar el nombre del usuario
+std::string obtenerNombre() {
     std::string nombre;
-    char opcion;
-    std::vector<std::string> nombres;
-    int contador = 0;
-
-    do {
-        // Solicitar al usuario que ingrese su nombre
+    while (true) {
         std::cout << "Por favor, ingresa tu nombre: ";
         std::getline(std::cin, nombre);
 
         // Validar que el usuario haya ingresado algo
-        if (nombre.empty()) {
-            std::cerr << "Error: No has ingresado un nombre. Por favor, intenta de nuevo." << std::endl;
-            continue;
+        if (!nombre.empty()) {
+            return nombre;
         }
+        else {
+            std::cerr << "Error: No has ingresado un nombre. Por favor, intenta de nuevo." << std::endl;
+        }
+    }
+}
 
-        // Almacenar el nombre en la lista y aumentar el contador
+// Función para mostrar todos los nombres ingresados
+void mostrarNombres(const std::vector<std::string>& nombres) {
+    std::cout << "\nHas ingresado " << nombres.size() << " nombre(s):" << std::endl;
+    for (const std::string& nombre : nombres) {
+        std::cout << "- " << nombre << std::endl;
+    }
+}
+
+// Función para mostrar un mensaje de despedida aleatorio
+void mostrarDespedida() {
+    std::vector<std::string> despedidas = {
+        "¡Hasta luego!",
+        "¡Que tengas un gran día!",
+        "¡Adiós y cuídate!",
+        "¡Nos vemos pronto!",
+        "¡Fue un placer verte!"
+    };
+
+    std::srand(static_cast<unsigned int>(std::time(nullptr))); // Semilla para generar números aleatorios
+    int indice = std::rand() % despedidas.size();
+    std::cout << "\nGracias por usar el programa. " << despedidas[indice] << std::endl;
+}
+
+// Función principal del programa
+int main() {
+    std::vector<std::string> nombres;
+    char opcion;
+
+    do {
+        // Obtener y validar el nombre del usuario
+        std::string nombre = obtenerNombre();
+
+        // Almacenar el nombre en la lista
         nombres.push_back(nombre);
-        contador++;
 
         // Mostrar el saludo personalizado
         mostrarSaludo(nombre);
@@ -43,23 +73,10 @@ int main() {
     } while (opcion == 's' || opcion == 'S');
 
     // Mostrar todos los nombres ingresados
-    std::cout << "\nHas ingresado " << contador << " nombre(s):" << std::endl;
-    for (const std::string& nombre : nombres) {
-        std::cout << "- " << nombre << std::endl;
-    }
+    mostrarNombres(nombres);
 
     // Mostrar un mensaje de despedida aleatorio
-    std::vector<std::string> despedidas = {
-        "¡Hasta luego!",
-        "¡Que tengas un gran día!",
-        "¡Adiós y cuídate!",
-        "¡Nos vemos pronto!",
-        "¡Fue un placer verte!"
-    };
-
-    std::srand(static_cast<unsigned int>(std::time(nullptr))); // Semilla para generar números aleatorios
-    int indice = std::rand() % despedidas.size();
-    std::cout << "\nGracias por usar el programa. " << despedidas[indice] << std::endl;
+    mostrarDespedida();
 
     return 0;
 }
