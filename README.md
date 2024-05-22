@@ -63,4 +63,4 @@ Este es un programa simple en C++ para gestionar nombres, que incluye diversas f
 ## Autor
 
 - Nombre: Fabricio Mora Gómez
-- GitHub: [@tu_usuario](https://github.com/chicho377)
+- GitHub: [@chicho377](https://github.com/chicho377)
