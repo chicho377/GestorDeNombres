@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <limits>
+#include <algorithm> // Para usar std::find y std::remove
 
 // Función que muestra un saludo personalizado
 void mostrarSaludo(const std::string& nombre) {
@@ -35,6 +36,22 @@ void mostrarNombres(const std::vector<std::string>& nombres) {
     }
 }
 
+// Función para mostrar la longitud promedio de los nombres ingresados
+void mostrarLongitudPromedio(const std::vector<std::string>& nombres) {
+    if (nombres.empty()) {
+        std::cout << "No se ingresaron nombres, no se puede calcular la longitud promedio." << std::endl;
+        return;
+    }
+
+    int totalCaracteres = 0;
+    for (const std::string& nombre : nombres) {
+        totalCaracteres += nombre.length();
+    }
+
+    double promedio = static_cast<double>(totalCaracteres) / nombres.size();
+    std::cout << "La longitud promedio de los nombres ingresados es: " << promedio << " caracteres." << std::endl;
+}
+
 // Función para mostrar un mensaje de despedida aleatorio
 void mostrarDespedida() {
     std::vector<std::string> despedidas = {
@@ -50,20 +67,16 @@ void mostrarDespedida() {
     std::cout << "\nGracias por usar el programa. " << despedidas[indice] << std::endl;
 }
 
-// Función para calcular y mostrar la longitud promedio de los nombres ingresados
-void mostrarLongitudPromedio(const std::vector<std::string>& nombres) {
-    if (nombres.empty()) {
-        std::cout << "No se ingresaron nombres, no se puede calcular la longitud promedio." << std::endl;
-        return;
-    }
+// Función para buscar un nombre en la lista
+bool buscarNombre(const std::vector<std::string>& nombres, const std::string& nombreBuscado) {
+    auto it = std::find(nombres.begin(), nombres.end(), nombreBuscado);
+    return it != nombres.end();
+}
 
-    int totalCaracteres = 0;
-    for (const std::string& nombre : nombres) {
-        totalCaracteres += nombre.length();
-    }
-
-    double promedio = static_cast<double>(totalCaracteres) / nombres.size();
-    std::cout << "La longitud promedio de los nombres ingresados es: " << promedio << " caracteres." << std::endl;
+// Función para eliminar un nombre de la lista
+void eliminarNombre(std::vector<std::string>& nombres, const std::string& nombreEliminar) {
+    auto it = std::remove(nombres.begin(), nombres.end(), nombreEliminar);
+    nombres.erase(it, nombres.end());
 }
 
 // Función principal del programa
@@ -93,6 +106,29 @@ int main() {
 
     // Mostrar la longitud promedio de los nombres ingresados
     mostrarLongitudPromedio(nombres);
+
+    // Opciones adicionales: buscar y eliminar un nombre
+    std::string nombreBuscar;
+    std::cout << "\n¿Deseas buscar un nombre específico en la lista? (Ingrese el nombre o vacío para saltar): ";
+    std::getline(std::cin, nombreBuscar);
+
+    if (!nombreBuscar.empty()) {
+        if (buscarNombre(nombres, nombreBuscar)) {
+            std::cout << "El nombre '" << nombreBuscar << "' está en la lista." << std::endl;
+        }
+        else {
+            std::cout << "El nombre '" << nombreBuscar << "' no está en la lista." << std::endl;
+        }
+    }
+
+    std::string nombreEliminar;
+    std::cout << "\n¿Deseas eliminar un nombre de la lista? (Ingrese el nombre o vacío para saltar): ";
+    std::getline(std::cin, nombreEliminar);
+
+    if (!nombreEliminar.empty()) {
+        eliminarNombre(nombres, nombreEliminar);
+        std::cout << "Nombre '" << nombreEliminar << "' eliminado de la lista." << std::endl;
+    }
 
     // Mostrar un mensaje de despedida aleatorio
     mostrarDespedida();
