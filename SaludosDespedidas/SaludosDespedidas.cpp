@@ -5,8 +5,8 @@
 #include <cstdlib>
 #include <ctime>
 #include <limits>
-#include <algorithm> // Para usar std::find y std::remove
-#include <cctype>    // Para usar std::toupper
+#include <algorithm>
+#include <cctype>
 
 // Función que muestra un saludo personalizado
 void mostrarSaludo(const std::string& nombre) {
@@ -58,13 +58,13 @@ void mostrarLongitudPromedio(const std::vector<std::string>& nombres) {
 }
 
 // Función para mostrar un mensaje de despedida aleatorio
-void mostrarDespedida() {
+void mostrarDespedida(const std::string& ultimoNombre) {
     std::vector<std::string> despedidas = {
         "¡Hasta luego!",
         "¡Que tengas un gran día!",
         "¡Adiós y cuídate!",
-        "¡Nos vemos pronto!",
-        "¡Fue un placer verte!"
+        "¡Nos vemos pronto, " + ultimoNombre + "!",
+        "¡Fue un placer verte, " + ultimoNombre + "!"
     };
 
     std::srand(static_cast<unsigned int>(std::time(nullptr))); // Semilla para generar números aleatorios
@@ -125,6 +125,24 @@ int validarEntradaNumerica() {
     return valor;
 }
 
+// Función para validar las opciones del menú
+char validarOpcionMenu(const std::string& opcionesValidas) {
+    char opcion;
+    while (true) {
+        std::cout << "Ingrese una opción (" << opcionesValidas << "): ";
+        std::cin >> opcion;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Limpiar el buffer de entrada
+        opcion = std::toupper(opcion);
+        if (opcionesValidas.find(opcion) != std::string::npos) {
+            break;
+        }
+        else {
+            std::cout << "Opción inválida. Intente nuevamente." << std::endl;
+        }
+    }
+    return opcion;
+}
+
 // Función para guardar los nombres en un archivo de texto
 void guardarNombresEnArchivo(const std::vector<std::string>& nombres, const std::string& nombreArchivo) {
     std::ofstream archivo(nombreArchivo);
@@ -166,124 +184,158 @@ int main() {
     char opcion;
 
     do {
-        // Obtener y validar el nombre del usuario
-        std::string nombre = obtenerNombre();
+        mostrarSaludo("Usuario"); // Cambiar "Usuario" por un nombre ficticio
 
-        // Almacenar el nombre en la lista
-        nombres.push_back(nombre);
+        // Mostrar un menú de opciones
+        std::cout << "\n=== Menú ===" << std::endl;
+        std::cout << "1. Ingresar un nombre" << std::endl;
+        std::cout << "2. Mostrar todos los nombres" << std::endl;
+        std::cout << "3. Mostrar la longitud promedio de los nombres" << std::endl;
+        std::cout << "4. Buscar un nombre en la lista" << std::endl;
+        std::cout << "5. Eliminar un nombre de la lista" << std::endl;
+        std::cout << "6. Contar cuántos nombres empiezan con una letra específica" << std::endl;
+        std::cout << "7. Buscar nombres por longitud" << std::endl;
+        std::cout << "8. Guardar los nombres en un archivo" << std::endl;
+        std::cout << "9. Cargar nombres desde un archivo" << std::endl;
+        std::cout << "0. Salir" << std::endl;
 
-        // Mostrar el saludo personalizado
-        mostrarSaludo(nombre);
+        opcion = validarOpcionMenu("0123456789");
 
-        // Preguntar al usuario si desea continuar
-        std::cout << "¿Quieres ingresar otro nombre? (s/n): ";
-        std::cin >> opcion;
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Limpiar el buffer de entrada
-
-    } while (opcion == 's' || opcion == 'S');
-
-    // Mostrar todos los nombres ingresados ordenados alfabéticamente
-    mostrarNombres(nombres);
-
-    // Mostrar la longitud promedio de los nombres ingresados
-    mostrarLongitudPromedio(nombres);
-
-    // Opciones adicionales: buscar y eliminar un nombre
-    std::string nombreBuscar;
-    std::cout << "\n¿Deseas buscar un nombre específico en la lista? (Ingrese el nombre o vacío para saltar): ";
-    std::getline(std::cin, nombreBuscar);
-
-    if (!nombreBuscar.empty()) {
-        if (buscarNombre(nombres, nombreBuscar)) {
-            std::cout << "El nombre '" << nombreBuscar << "' está en la lista." << std::endl;
+        switch (opcion) {
+        case '1': {
+            // Obtener y validar el nombre
+            std::string nombre = obtenerNombre();
+            nombres.push_back(nombre);
+            std::cout << "Nombre '" << nombre << "' agregado correctamente." << std::endl;
+            break;
         }
-        else {
-            std::cout << "El nombre '" << nombreBuscar << "' no está en la lista." << std::endl;
-        }
-    }
-
-    std::string nombreEliminar;
-    std::cout << "\n¿Deseas eliminar un nombre de la lista? (Ingrese el nombre o vacío para saltar): ";
-    std::getline(std::cin, nombreEliminar);
-
-    if (!nombreEliminar.empty()) {
-        eliminarNombre(nombres, nombreEliminar);
-        std::cout << "Nombre '" << nombreEliminar << "' eliminado de la lista." << std::endl;
-    }
-
-    // Contar cuántos nombres empiezan con una letra específica
-    char letraBuscar;
-    std::cout << "\nIngrese una letra para contar cuántos nombres empiezan con esa letra: ";
-    std::cin >> letraBuscar;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //
-
-    // Limpiar el buffer de entrada
-
-    int cantidadNombresPorLetra = contarNombresPorLetra(nombres, letraBuscar);
-    std::cout << "Cantidad de nombres que empiezan con '" << letraBuscar << "': " << cantidadNombresPorLetra << std::endl;
-
-    // Buscar nombres por longitud
-    std::cout << "\n¿Deseas buscar nombres por longitud específica? (s/n): ";
-    std::cin >> opcion;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Limpiar el buffer de entrada
-
-    if (opcion == 's' || opcion == 'S') {
-        int longitudBuscar;
-        std::cout << "Ingrese la longitud que deseas buscar: ";
-        longitudBuscar = validarEntradaNumerica();
-
-        std::vector<std::string> nombresPorLongitud = buscarNombresPorLongitud(nombres, longitudBuscar);
-        if (nombresPorLongitud.empty()) {
-            std::cout << "No se encontraron nombres con longitud " << longitudBuscar << "." << std::endl;
-        }
-        else {
-            std::cout << "Nombres con longitud " << longitudBuscar << ":" << std::endl;
-            for (const std::string& nombre : nombresPorLongitud) {
-                std::cout << "- " << nombre << std::endl;
+        case '2': {
+            // Mostrar todos los nombres ingresados
+            if (nombres.empty()) {
+                std::cout << "No hay nombres ingresados para mostrar." << std::endl;
             }
-        }
-    }
-
-    // Guardar los nombres en un archivo
-    std::cout << "\n¿Deseas guardar los nombres en un archivo? (s/n): ";
-    std::cin >> opcion;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Limpiar el buffer de entrada
-
-    if (opcion == 's' || opcion == 'S') {
-        std::string nombreArchivo;
-        std::cout << "Ingrese el nombre del archivo donde desea guardar los nombres: ";
-        std::getline(std::cin, nombreArchivo);
-
-        guardarNombresEnArchivo(nombres, nombreArchivo);
-    }
-
-    // Cargar nombres desde un archivo
-    std::cout << "\n¿Deseas cargar nombres desde un archivo? (s/n): ";
-    std::cin >> opcion;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Limpiar el buffer de entrada
-
-    if (opcion == 's' || opcion == 'S') {
-        std::string nombreArchivo;
-        std::cout << "Ingrese el nombre del archivo desde donde desea cargar los nombres: ";
-        std::getline(std::cin, nombreArchivo);
-
-        std::vector<std::string> nombresCargados = cargarNombresDesdeArchivo(nombreArchivo);
-        if (!nombresCargados.empty()) {
-            std::cout << "Nombres cargados desde el archivo:" << std::endl;
-            for (const std::string& nombre : nombresCargados) {
-                std::cout << "- " << nombre << std::endl;
+            else {
+                mostrarNombres(nombres);
             }
-            // Combinar los nombres cargados con los nombres existentes
-            nombres.insert(nombres.end(), nombresCargados.begin(), nombresCargados.end());
-            std::cout << "Se han combinado los nombres cargados con los existentes." << std::endl;
+            break;
         }
-        else {
-            std::cout << "No se pudieron cargar nombres desde el archivo." << std::endl;
+        case '3': {
+            // Mostrar la longitud promedio de los nombres ingresados
+            mostrarLongitudPromedio(nombres);
+            break;
         }
-    }
+        case '4': {
+            // Buscar un nombre en la lista
+            std::string nombreBuscar;
+            std::cout << "Ingrese el nombre que desea buscar: ";
+            std::getline(std::cin, nombreBuscar);
 
-    // Mostrar un mensaje de despedida aleatorio
-    mostrarDespedida();
+            if (buscarNombre(nombres, nombreBuscar)) {
+                std::cout << "El nombre '" << nombreBuscar << "' se encuentra en la lista." << std::endl;
+            }
+            else {
+                std::cout << "El nombre '" << nombreBuscar << "' no se encuentra en la lista." << std::endl;
+            }
+            break;
+        }
+        case '5': {
+            // Eliminar un nombre de la lista
+            if (nombres.empty()) {
+                std::cout << "No hay nombres para eliminar." << std::endl;
+                break;
+            }
+
+            std::string nombreEliminar;
+            std::cout << "Ingrese el nombre que desea eliminar: ";
+            std::getline(std::cin, nombreEliminar);
+
+            eliminarNombre(nombres, nombreEliminar);
+            std::cout << "Nombre '" << nombreEliminar << "' eliminado correctamente." << std::endl;
+            break;
+        }
+        case '6': {
+            // Contar cuántos nombres empiezan con una letra específica
+            char letraBuscar;
+            std::cout << "Ingrese la letra por la que desea buscar: ";
+            std::cin >> letraBuscar;
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Limpiar el buffer de entrada
+
+            int cantidadNombresPorLetra = contarNombresPorLetra(nombres, letraBuscar);
+            std::cout << "Cantidad de nombres que empiezan con '" << letraBuscar << "': " << cantidadNombresPorLetra << std::endl;
+            break;
+        }
+        case '7': {
+            // Buscar nombres por longitud
+            int longitudBuscar;
+            std::cout << "Ingrese la longitud que desea buscar: ";
+            longitudBuscar = validarEntradaNumerica();
+
+            std::vector<std::string> nombresPorLongitud = buscarNombresPorLongitud(nombres, longitudBuscar);
+            if (nombresPorLongitud.empty()) {
+                std::cout << "No se encontraron nombres con longitud " << longitudBuscar << "." << std::endl;
+            }
+            else {
+                std::cout << "Nombres con longitud " << longitudBuscar << ":" << std::endl;
+                for (const std::string& nombre : nombresPorLongitud) {
+                    std::cout << "- " << nombre << std::endl;
+                }
+            }
+            break;
+        }
+        case '8': {
+            // Guardar los nombres en un archivo
+            if (nombres.empty()) {
+                std::cout << "No hay nombres para guardar." << std::endl;
+                break;
+            }
+
+            std::string nombreArchivo;
+            std::cout << "Ingrese el nombre del archivo donde desea guardar los nombres: ";
+            std::getline(std::cin, nombreArchivo);
+
+            guardarNombresEnArchivo(nombres, nombreArchivo);
+            break;
+        }
+        case '9': {
+            // Cargar nombres desde un archivo
+            std::string nombreArchivo;
+            std::cout << "Ingrese el nombre del archivo desde donde desea cargar los nombres: ";
+            std::getline(std::cin, nombreArchivo);
+
+            std::vector<std::string> nombresCargados = cargarNombresDesdeArchivo(nombreArchivo);
+            if (!nombresCargados.empty()) {
+                std::cout << "Nombres cargados desde el archivo:" << std::endl;
+                for (const std::string& nombre : nombresCargados) {
+                    std::cout << "- " << nombre << std::endl;
+                }
+                // Combinar los nombres cargados con los nombres existentes
+                nombres.insert(nombres.end(), nombresCargados.begin(), nombresCargados.end());
+                std::cout << "Se han combinado los nombres cargados con los existentes." << std::endl;
+            }
+            else {
+                std::cout << "No se pudieron cargar nombres desde el archivo." << std::endl;
+            }
+            break;
+        }
+        case '0': {
+            // Salir del programa
+            std::cout << "Saliendo del programa..." << std::endl;
+            break;
+        }
+        default:
+            std::cout << "Opción no válida." << std::endl;
+            break;
+        }
+
+    } while (opcion != '0');
+
+    // Mostrar un mensaje de despedida aleatorio basado en el último nombre ingresado
+    if (!nombres.empty()) {
+        mostrarDespedida(nombres.back());
+    }
+    else {
+        std::cout << "\nGracias por usar el programa." << std::endl;
+    }
 
     return 0;
 }
